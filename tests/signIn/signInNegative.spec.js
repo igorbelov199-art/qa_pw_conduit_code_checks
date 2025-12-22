@@ -1,4 +1,4 @@
-import { test } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { SignInPage } from "../../src/pages/SignInPage";
 
 test.describe("Sign in negative tests", () => {
@@ -12,10 +12,10 @@ test.describe("Sign in negative tests", () => {
   test("Assert error message for empty password", async () => {
     await signInPage.fillEmailField("test@gmail.com");
     await signInPage.clickSignInButton();
-    await signInPage.assertErrorMessageContainsText(`password:can\'t be blank`);
+    await signInPage.assertErrorMessageContainsText(`password:can't be blank`);
   });
 
-  test("Assert error message for empty email", async ({ page }) => {
+  test("Assert error message for empty email", async () => {
     await signInPage.fillPasswordField("newpass123!");
     await signInPage.clickSignInButton();
     await signInPage.assertErrorMessageContainsText(`email:can't be blank`);
@@ -26,7 +26,19 @@ test.describe("Sign in negative tests", () => {
     await signInPage.fillPasswordField("1");
     await signInPage.clickSignInButton();
     await signInPage.assertErrorMessageContainsText(
-      `email or password:is invalid`
+      `email or password:is invalid`,
     );
+  });
+
+  test("invalid login shows error", async ({ page }) => {
+    const signInPage = new SignInPage(page);
+
+    await signInPage.open();
+    await signInPage.fillEmailField("wrong@example.com");
+    await signInPage.fillPasswordField("wrongpass");
+    await signInPage.clickSignInButton();
+
+    const errorText = await signInPage.getErrorMessageText();
+    expect(errorText).toContain("Invalid password");
   });
 });

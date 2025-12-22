@@ -1,5 +1,3 @@
-import { expect, test } from "@playwright/test";
-
 export class SignInPage {
   constructor(page) {
     this.page = page;
@@ -25,7 +23,8 @@ export class SignInPage {
     await this.signInButton.click();
   }
 
-  async assertErrorMessageContainsText(messageText) {
-    await expect(this.errorMessage).toContainText(messageText);
+  // Повертаємо текст помилки, замість assert
+  async getErrorMessageText() {
+    return await this.errorMessage.textContent();
   }
 }
